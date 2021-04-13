@@ -87,8 +87,11 @@ void InserirCadastro(Info *pInsert)
 {
     if (inserirNome(&(arvoreNome), pInsert) && inserirCPF(&(arvoreCPF), pInsert))
     {
-        printf("Cadastro concluido!\n");
-        printf("------------------------\n");
+        if (balanceamento(&(arvoreCPF)) && balanceamento(&(arvoreNome)))
+        {
+            printf("Cadastro concluido!\n");
+            printf("------------------------\n");
+        }
     }
     else
     {

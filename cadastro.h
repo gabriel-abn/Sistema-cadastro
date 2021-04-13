@@ -25,3 +25,11 @@ void InserirCadastro(Info *);
 int Opcoes(int *);
 void reset(char *);
 void Menu();
+
+int altura(No *);
+void LL(No **);
+void RR(No **);
+void LR(No **);
+void RL(No **);
+int fator_balnc(No *);
+int balanceamento(No **);
