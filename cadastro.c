@@ -118,9 +118,26 @@ void Imprimir(No *pRaiz)
     }
 }
 
+
+
+int Pesquisa(int *i)
+{
+    printf("Digite um meio de pesquisa: \n");
+    printf("1. Nome\n");
+    printf("------------------------\n");
+    printf("2. CPF\n");
+    printf("------------------------\n");
+    scanf("%d", i);
+    fflush(stdin);
+
+    return *i;
+}
+
 int Opcoes(int *i)
 {
     printf("1. Inserir cadastro\n");
+    printf("------------------------\n");
+    printf("2. Pesquisar cadastro\n");
     printf("------------------------\n");
     printf("4. Imprimir cadastros\n");
     printf("------------------------\n");
@@ -155,6 +172,24 @@ void Menu()
         case 1:
             pIns = cadastro();
             InserirCadastro(pIns);
+            reset(&c);
+            break;
+        case 2:
+            
+            switch (Pesquisa(&i))
+            {
+            case 1:
+                /* code */
+                break;
+            case 2:
+                /* code */
+                break;
+            
+            default:
+                printf("Opcao invalida! voltando...");
+                break;
+            }
+
             reset(&c);
             break;
         case 4:
