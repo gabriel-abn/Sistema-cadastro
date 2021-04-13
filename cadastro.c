@@ -14,7 +14,7 @@ void IniciarArvores()
     arvoreNome = NULL;
 }
 
-Info *cadastro()
+Info *cadastroInserir()
 {
     Info *pReturn = (Info*)malloc(sizeof(Info));
     printf("CPF: ");
@@ -118,9 +118,50 @@ void Imprimir(No *pRaiz)
     }
 }
 
+int pesquisaCPF(No *pRaiz, Info *pInfo)
+{
+    if (pRaiz == NULL)
+    {
+        printf("Produto nao encontrado...\n");
+        return 0;
+    }
+    if (pInfo->cpf > pRaiz->info->cpf)
+    {
+        return pesquisaCPF(pRaiz->pDir, pInfo);
+    }
+    if (pInfo->cpf < pRaiz->info->cpf)
+    {
+        return pesquisaCPF(pRaiz->pEsq, pInfo);
+    }
 
+    *pInfo = *pRaiz->info;
+    return 1;
+}
 
-int Pesquisa(int *i)
+int pesquisaNome(No *pRaiz, Info *pInfo)
+{
+    if (pRaiz == NULL)
+    {
+        printf("Produto nao encontrado...\n");
+        return 0;
+    }
+    for (int i = 0; i < strlen(pInfo->nome); i++)
+    {
+        if (pInfo->nome[i] > pRaiz->info->nome[i])
+        {
+            return pesquisaNome(pRaiz->pDir, pInfo);
+        }
+        if (pInfo->nome[i] < pRaiz->info->nome[i])
+        {
+            return pesquisaNome(pRaiz->pEsq, pInfo);
+        }
+    }
+
+    *pInfo = *pRaiz->info;
+    return 1;
+}
+
+int PesqInfo(int *i)
 {
     printf("Digite um meio de pesquisa: \n");
     printf("1. Nome\n");
@@ -164,25 +205,34 @@ void Menu()
     char c = 's';
     int i;
     Info *pIns;
+    Info *pPes = (Info*)malloc(sizeof(Info));
 
     do
     {
         switch (Opcoes(&i))
         {
         case 1:
-            pIns = cadastro();
+            pIns = cadastroInserir();
             InserirCadastro(pIns);
             reset(&c);
             break;
         case 2:
-            
-            switch (Pesquisa(&i))
+            system("cls");
+            switch (PesqInfo(&i))
             {
             case 1:
-                /* code */
+                printf("Digite o nome: ");
+                gets(pPes->nome);
+                fflush(stdin);
+                pesquisaNome(arvoreNome, pPes);
+                Display(pPes);
                 break;
             case 2:
-                /* code */
+                printf("Digite o CPF: ");
+                scanf("%d", &(pPes->cpf));
+                fflush(stdin);
+                pesquisaNome(arvoreCPF, pPes);
+                Display(pPes);
                 break;
             
             default:
