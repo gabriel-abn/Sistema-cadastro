@@ -83,23 +83,6 @@ int inserirNome(No **ppRaiz, Info *p)
     return 0;
 }
 
-void InserirCadastro(Info *pInsert)
-{
-    if (inserirNome(&(arvoreNome), pInsert) && inserirCPF(&(arvoreCPF), pInsert))
-    {
-        if (balanceamento(&(arvoreCPF)) && balanceamento(&(arvoreNome)))
-        {
-            printf("Cadastro concluido!\n");
-            printf("------------------------\n");
-        }
-    }
-    else
-    {
-        printf("Erro no cadastro: Registro ja existente!\n");
-        printf("------------------------\n");
-    }
-}
-
 void Display(Info *p)
 {
     printf("------------------------\n");
@@ -125,7 +108,7 @@ int pesquisaCPF(No *pRaiz, Info *pInfo)
 {
     if (pRaiz == NULL)
     {
-        printf("Produto nao encontrado...\n");
+        printf("Registro nao encontrado...\n");
         return 0;
     }
     if (pInfo->cpf > pRaiz->info->cpf)
@@ -138,6 +121,7 @@ int pesquisaCPF(No *pRaiz, Info *pInfo)
     }
 
     *pInfo = *pRaiz->info;
+    Display(pInfo);
     return 1;
 }
 
@@ -145,7 +129,7 @@ int pesquisaNome(No *pRaiz, Info *pInfo)
 {
     if (pRaiz == NULL)
     {
-        printf("Produto nao encontrado...\n");
+        printf("Registro nao encontrado...\n");
         return 0;
     }
     for (int i = 0; i < strlen(pInfo->nome); i++)
@@ -161,7 +145,193 @@ int pesquisaNome(No *pRaiz, Info *pInfo)
     }
 
     *pInfo = *pRaiz->info;
+    Display(pInfo);
     return 1;
+}
+
+void sucessor(No *folha, No **ppRaiz)
+{
+    No *pAux;
+
+    if ((*ppRaiz)->pEsq != NULL)
+    {
+        sucessor(folha, &(*ppRaiz)->pEsq);
+    }
+
+    *folha->info = *(*ppRaiz)->info;
+    pAux = *ppRaiz;
+    *ppRaiz = (*ppRaiz)->pDir;
+    free(pAux);
+}
+
+int retirarCPF(No **ppRaiz, Info *r)
+{
+    if (*ppRaiz == NULL)
+    {
+        return 0;
+    }
+    
+    if ((*ppRaiz)->info->cpf > r->cpf)
+    {
+        if (retirarCPF(&((*ppRaiz)->pEsq), r))
+        {
+            if (balanceamento(ppRaiz))
+                return 1;
+            else
+                return 0;
+        }
+        else
+            return 0;
+    }
+    else 
+        if ((*ppRaiz)->info->cpf < r->cpf)
+        {
+            if (retirarCPF(&((*ppRaiz)->pDir), r))
+            {
+                if (balanceamento(ppRaiz))
+                    return 1;
+                else
+                    return 0;
+            }
+            else
+                return 0;
+        }
+        else if ((*ppRaiz)->info->cpf == r->cpf)
+        {
+            No *pAux;
+            *r = *(*ppRaiz)->info;
+
+            if ((*ppRaiz)->pDir == NULL)
+            {
+                pAux = *ppRaiz;
+                *ppRaiz = (*ppRaiz)->pEsq;
+                free(pAux);
+                if (balanceamento(ppRaiz))
+                {
+                    return 1;
+                }
+                return 0;
+            }
+            if ((*ppRaiz)->pEsq == NULL)
+            {
+                pAux = *ppRaiz;
+                *ppRaiz = (*ppRaiz)->pDir;
+                free(pAux);
+                if (balanceamento(ppRaiz))
+                {
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    sucessor(*ppRaiz, &(*ppRaiz)->pDir);
+    if (balanceamento(ppRaiz))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int retirarNome(No **ppRaiz, Info *r)
+{
+    if (*ppRaiz == NULL)
+    {
+        return 0;
+    }
+    for (int i = 0; i < strlen(r->nome); i++)
+    {
+        if ((*ppRaiz)->info->nome[i] > r->nome[i])
+        {
+            if (retirarNome(&((*ppRaiz)->pEsq), r))
+            {
+                if (balanceamento(ppRaiz))
+                    return 1;
+                else
+                    return 0;
+            }
+            else
+                return 0;
+        }
+        else 
+            if ((*ppRaiz)->info->nome[i] < r->nome[i])
+            {
+                if (retirarNome(&((*ppRaiz)->pDir), r))
+                {
+                    if (balanceamento(ppRaiz))
+                        return 1;
+                    else
+                        return 0;
+                }
+                else
+                    return 0;
+            }
+            else if ((*ppRaiz)->info->nome[i] == r->nome[i])
+            {
+                No *pAux;
+                *r = *(*ppRaiz)->info;
+
+                if ((*ppRaiz)->pDir == NULL)
+                {
+                    pAux = *ppRaiz;
+                    *ppRaiz = (*ppRaiz)->pEsq;
+                    free(pAux);
+                    if (balanceamento(ppRaiz))
+                    {
+                        return 1;
+                    }
+                    return 0;
+                }
+                if ((*ppRaiz)->pEsq == NULL)
+                {
+                    pAux = *ppRaiz;
+                    *ppRaiz = (*ppRaiz)->pDir;
+                    free(pAux);
+                    if (balanceamento(ppRaiz))
+                    {
+                        return 1;
+                    }
+                    return 0;
+                }
+            }
+    } 
+    sucessor(*ppRaiz, &(*ppRaiz)->pDir);
+    if (balanceamento(ppRaiz))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void InserirCadastro(Info *pInsert)
+{
+    if (inserirNome(&(arvoreNome), pInsert) && inserirCPF(&(arvoreCPF), pInsert))
+    {
+        if (!(balanceamento(&(arvoreCPF)) && balanceamento(&(arvoreNome))))
+        {
+            printf("Cadastro concluido!\n");
+            printf("------------------------\n");
+        }
+    }
+    else
+    {
+        printf("Erro no cadastro: Registro ja existente!\n");
+        printf("------------------------\n");
+    }
+}
+
+void RetirarCadastro(Info *pRemove)
+{    
+    if (!(retirarNome(&(arvoreNome), pRemove) && retirarCPF(&(arvoreCPF), pRemove)))
+    {
+        printf("Cadastro retirado!\n");
+        printf("------------------------\n");
+        Display(pRemove);
+    }
+    else
+    {
+        printf("Erro!\n");
+        printf("------------------------\n");
+    }
 }
 
 int PesqInfo(int *i)
@@ -171,6 +341,7 @@ int PesqInfo(int *i)
     printf("------------------------\n");
     printf("2. CPF\n");
     printf("------------------------\n");
+    printf("Opcao: ");
     scanf("%d", i);
     fflush(stdin);
 
@@ -182,6 +353,8 @@ int Opcoes(int *i)
     printf("1. Inserir cadastro\n");
     printf("------------------------\n");
     printf("2. Pesquisar cadastro\n");
+    printf("------------------------\n");
+    printf("3. Retirar cadastro\n");
     printf("------------------------\n");
     printf("4. Imprimir cadastros\n");
     printf("------------------------\n");
@@ -228,14 +401,42 @@ void Menu()
                 gets(pPes->nome);
                 fflush(stdin);
                 pesquisaNome(arvoreNome, pPes);
-                Display(pPes);
                 break;
             case 2:
                 printf("Digite o CPF: ");
                 scanf("%d", &(pPes->cpf));
                 fflush(stdin);
-                pesquisaNome(arvoreCPF, pPes);
-                Display(pPes);
+                pesquisaCPF(arvoreCPF, pPes);
+                break;
+            
+            default:
+                printf("Opcao invalida! voltando...");
+                break;
+            }
+
+            reset(&c);
+            break;
+        case 3:
+            system("cls");
+            switch (PesqInfo(&i))
+            {
+            case 1:
+                printf("Digite o nome: ");
+                gets(pPes->nome);
+                fflush(stdin);
+
+                if (pesquisaNome(arvoreNome, pPes));
+
+                RetirarCadastro(pPes);
+                break;
+            case 2:
+                printf("Digite o CPF: ");
+                scanf("%d", &(pPes->cpf));
+                fflush(stdin);
+
+                if (pesquisaCPF(arvoreCPF, pPes));
+
+                RetirarCadastro(pPes);
                 break;
             
             default:
