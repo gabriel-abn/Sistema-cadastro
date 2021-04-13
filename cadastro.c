@@ -128,6 +128,7 @@ int Opcoes(int *i)
     printf("------------------------\n");
     printf("Opcao: ");
     scanf("%d", i);
+    fflush(stdin);
 
     return *i;
 }
