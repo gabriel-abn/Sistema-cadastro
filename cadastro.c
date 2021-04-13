@@ -334,6 +334,16 @@ void RetirarCadastro(Info *pRemove)
     }
 }
 
+void LimparDados(No *pRaiz)
+{
+    if (pRaiz != NULL)
+    {
+        LimparDados(pRaiz->pEsq);
+        LimparDados(pRaiz->pDir);
+        free(pRaiz);
+    }
+}
+
 int PesqInfo(int *i)
 {
     printf("Digite um meio de pesquisa: \n");
@@ -358,7 +368,9 @@ int Opcoes(int *i)
     printf("------------------------\n");
     printf("4. Imprimir cadastros\n");
     printf("------------------------\n");
-    printf("5. Sair\n");
+    printf("5. Limpar historico\n");
+    printf("------------------------\n");
+    printf("6. Sair\n");
     printf("------------------------\n");
     printf("Opcao: ");
     scanf("%d", i);
@@ -452,6 +464,13 @@ void Menu()
             reset(&c);
             break;
         case 5:
+            LimparDados(arvoreCPF);
+            LimparDados(arvoreNome);
+            printf("Historico vazio!\n");
+            IniciarArvores();
+            reset(&c);
+            break;
+        case 6:
             printf("Saindo...");
             exit(0);
             break;
